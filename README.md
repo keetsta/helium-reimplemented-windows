@@ -1,17 +1,14 @@
 # helium-windows
 
-Windows packaging for [Helium](https://github.com/imputnet/helium).
+Windows packaging for [Helium Reimplemented](https://github.com/keetsta/helium-reimplemented),
+a personal fork of [Helium](https://github.com/imputnet/helium).
 
 ## Credits
 
 This repo is based on
-[ungoogled-chromium-windows](https://github.com/ungoogled-software/ungoogled-chromium-windows),
-but is pretty heavily modified for Helium. Huge shout-out to everyone behind ungoogled-chromium,
-they made working with Chromium infinitely easier.
-
-A huge thank you to [Depot](https://depot.dev/) for sponsoring our runners, which handle the Windows
-builds of Helium. Their high-performance infrastructure lets us compile and package Helium at least
-8 times faster than with GitHub-hosted runners, allowing us to release new builds within hours, not days.
+[ungoogled-chromium-windows](https://github.com/ungoogled-software/ungoogled-chromium-windows)
+and on [Helium's Windows packaging](https://github.com/imputnet/helium-windows). Thanks to
+everyone behind ungoogled-chromium, who made working with Chromium far easier.
 
 ## License
 All code, patches, modified portions of imported code or patches, and
@@ -61,7 +58,7 @@ methods for older Windows versions.
 Run in `Developer Command Prompt for VS` (as administrator):
 
 ```cmd
-git clone --recurse-submodules https://github.com/imputnet/helium-windows.git
+git clone --recurse-submodules https://github.com/keetsta/helium-windows.git
 cd helium-windows
 # Replace TAG_OR_BRANCH_HERE with a tag or branch name
 git checkout --recurse-submodules TAG_OR_BRANCH_HERE
