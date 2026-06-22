@@ -150,11 +150,23 @@ def main():
         '--dev',
         action='store_true'
     )
+    parser.add_argument(
+        '--out-dir',
+        default='out/Default',
+        help=('Output directory under the source tree. Default: %(default)s. '
+              'Use a separate dir (e.g. out/Dev) to keep dev and release '
+              'builds side by side.'))
     args = parser.parse_args()
 
     # Set common variables
     source_tree = _ROOT_DIR / 'build' / 'src'
     downloads_cache = _ROOT_DIR / 'build' / 'download_cache'
+
+    # Output dir (relative to source tree). Defaults to out/Default so existing
+    # release/CI behavior is unchanged; pass --out-dir out/Dev for a parallel
+    # component build that doesn't clobber the release tree.
+    out_dir_rel = args.out_dir.replace('\\', '/')
+    out_dir_win = out_dir_rel.replace('/', '\\')
 
     if not args.ci or not (source_tree / 'BUILD.gn').exists():
         # Setup environment
@@ -308,9 +320,9 @@ def main():
             source_tree
         )
 
-    if not args.ci or not (source_tree / 'out/Default').exists():
+    if not args.ci or not (source_tree / out_dir_rel).exists():
         # Output args.gn
-        (source_tree / 'out/Default').mkdir(parents=True)
+        (source_tree / out_dir_rel).mkdir(parents=True)
         gn_flags = (_ROOT_DIR / 'helium-chromium' / 'flags.gn').read_text(encoding=ENCODING)
         gn_flags += '\n'
         windows_flags = (_ROOT_DIR / 'flags.windows.gn').read_text(encoding=ENCODING)
@@ -335,19 +347,19 @@ def main():
             gn_flags += f'winsparkle_ed_key="{winsparkle_ed_key}"\n'
             gn_flags += f'winsparkle_authenticode_org="{authenticode_org}"\n'
 
-        (source_tree / 'out/Default/args.gn').write_text(gn_flags, encoding=ENCODING)
+        (source_tree / out_dir_rel / 'args.gn').write_text(gn_flags, encoding=ENCODING)
 
     # Enter source tree to run build commands
     os.chdir(source_tree)
 
-    if not args.ci or not os.path.exists('out\\Default\\gn.exe'):
+    if not args.ci or not os.path.exists(out_dir_win + '\\gn.exe'):
         # Run GN bootstrap
         _run_build_process(
-            sys.executable, 'tools\\gn\\bootstrap\\bootstrap.py', '-o', 'out\\Default\\gn.exe',
+            sys.executable, 'tools\\gn\\bootstrap\\bootstrap.py', '-o', out_dir_win + '\\gn.exe',
             '--skip-generate-buildfiles')
 
         # Run gn gen
-        _run_build_process('out\\Default\\gn.exe', 'gen', 'out\\Default', '--fail-on-unused-args')
+        _run_build_process(out_dir_win + '\\gn.exe', 'gen', out_dir_win, '--fail-on-unused-args')
 
     # Ninja commandline
     ninja_commandline = ['third_party\\ninja\\ninja.exe']
@@ -355,7 +367,7 @@ def main():
         ninja_commandline.append('-j')
         ninja_commandline.append(args.thread_count)
     ninja_commandline.append('-C')
-    ninja_commandline.append('out\\Default')
+    ninja_commandline.append(out_dir_win)
 
     if not args.ci or not args.build_installer:
         ninja_commandline.append('chrome')
