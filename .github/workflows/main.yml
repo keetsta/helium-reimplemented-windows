@@ -421,52 +421,12 @@ jobs:
         with:
           from_artifact: true
 
-      - name: Sign Helium binaries
-        uses: azure/artifact-signing-action@v1
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.AZURE_SIGNING_CERTIFICATE_NAME }}
-          files: ${{ steps.stage.outputs.files-to-sign }}
-          description: Helium
-          description-url: https://github.com/imputnet/helium-windows
-
-      # we want a different description here, so sign it separately again
-      - name: Sign Helium update helper
-        uses: azure/artifact-signing-action@v1
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.AZURE_SIGNING_CERTIFICATE_NAME }}
-          files: C:\helium-windows\build\src\out\Default\helium_update_helper.exe
-          description: Helium Update Helper
-          description-url: https://github.com/imputnet/helium-windows
-
       - name: Build Helium installer and package
         id: stage2
         uses: ./.github/actions/stage
         with:
           gen_installer: true
           from_artifact: false
-
-      - name: Sign Helium installer
-        uses: azure/artifact-signing-action@v1
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.AZURE_SIGNING_CERTIFICATE_NAME }}
-          files: C:\helium-windows\build\helium*-installer.exe
-          description: Helium Installer
-          description-url: https://github.com/imputnet/helium-windows
 
       - name: Upload artifacts
         id: stage3
@@ -892,33 +852,6 @@ jobs:
           arm: true
           from_artifact: true
 
-      - name: Sign Helium binaries
-        uses: azure/artifact-signing-action@v1
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.AZURE_SIGNING_CERTIFICATE_NAME }}
-          files: ${{ steps.stage.outputs.files-to-sign }}
-          description: Helium
-          description-url: https://github.com/imputnet/helium-windows
-
-      # we want a different description here, so sign it separately again
-      - name: Sign Helium update helper
-        uses: azure/artifact-signing-action@v1
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.AZURE_SIGNING_CERTIFICATE_NAME }}
-          files: C:\helium-windows\build\src\out\Default\helium_update_helper.exe
-          description: Helium Update Helper
-          description-url: https://github.com/imputnet/helium-windows
-
       - name: Build Helium installer and package
         id: stage2
         uses: ./.github/actions/stage
@@ -926,19 +859,6 @@ jobs:
           arm: true
           gen_installer: true
           from_artifact: false
-
-      - name: Sign Helium installer
-        uses: azure/artifact-signing-action@v1
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.AZURE_SIGNING_CERTIFICATE_NAME }}
-          files: C:\helium-windows\build\helium*-installer.exe
-          description: Helium Installer
-          description-url: https://github.com/imputnet/helium-windows
 
       - name: Upload artifacts
         id: stage3
@@ -979,17 +899,23 @@ jobs:
           submodule_commit_at() {
               git ls-tree "$1" helium-chromium | awk '{print $3}'
           }
-          LAST_TAG=$(git describe --tags --abbrev=0)
-          COMMIT_THEN=$(submodule_commit_at "$LAST_TAG")
-          COMMIT_NOW=$(submodule_commit_at HEAD)
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           {
             printf 'Changes since last build:\n### helium-windows\n```\n'
-            git log --oneline "$LAST_TAG..HEAD"
-            printf '```\n\n### helium-chromium\n```\n'
-            git -C helium-chromium log --oneline "$COMMIT_THEN..$COMMIT_NOW"
+            if [ -n "$LAST_TAG" ]; then
+              git log --oneline "$LAST_TAG..HEAD"
+              COMMIT_THEN=$(submodule_commit_at "$LAST_TAG")
+              COMMIT_NOW=$(submodule_commit_at HEAD)
+              printf '```\n\n### helium-chromium\n```\n'
+              git -C helium-chromium log --oneline "$COMMIT_THEN..$COMMIT_NOW"
+            else
+              git log --oneline
+              printf '```\n\n### helium-chromium\n```\n'
+              git -C helium-chromium log --oneline -20
+            fi
             printf '```\n\n---\n\n'
             printf 'See [this GitHub Actions Run](%s) for the [Workflow file](%s/workflow) used '
-            printf 'as well as the build logs and artifacts\n' "$GH_RUN_HREF" "$GH_RUN_HREF" 
+            printf 'as well as the build logs and artifacts\n' "$GH_RUN_HREF" "$GH_RUN_HREF"
           } | tee ./github_release_note.md
       - name: Publish release
         id: publish
