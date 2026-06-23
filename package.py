@@ -85,13 +85,13 @@ def main():
 
     target_cpu = _get_target_cpu(build_outputs)
 
-    installer_output = _ROOT_DIR / 'build' / f'helium_{version}_{target_cpu}-installer.exe'
+    installer_output = _ROOT_DIR / 'build' / f'helium-reimplemented_{version}_{target_cpu}-installer.exe'
     _build_nsis_installer(version, target_cpu, build_outputs, installer_output)
 
     mini_installer = build_outputs / 'mini_installer.exe'
     shutil.copy2(
         mini_installer,
-        _ROOT_DIR / 'build' / f'helium_{version}_{target_cpu}-mini-installer.exe')
+        _ROOT_DIR / 'build' / f'helium-reimplemented_{version}_{target_cpu}-mini-installer.exe')
 
     timestamp = None
     try:
@@ -100,7 +100,7 @@ def main():
     except FileNotFoundError:
         pass
 
-    output = Path('build/helium_{}_{}-windows.zip'.format(
+    output = Path('build/helium-reimplemented_{}_{}-windows.zip'.format(
         version, target_cpu))
 
     excluded_files = set([
