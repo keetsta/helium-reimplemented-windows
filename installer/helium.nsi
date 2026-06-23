@@ -25,6 +25,10 @@
 !define PRODUCT_NAME "Helium"
 !define PRODUCT_PUBLISHER "imput"
 !define PRODUCT_COMPANY_PATH "imput"
+; Install directory leaf name. Must match install_static::kProductPathName from
+; the branding patch (%LOCALAPPDATA%\imput\Helium Reimplemented\Application),
+; otherwise the launch button and system-install detection look in the wrong place.
+!define PRODUCT_INSTALL_DIR "Helium Reimplemented"
 !define PRODUCT_GUID "{FB68A146-637A-48C2-A0C4-1565DE45FEBD}"
 
 ; --- Installer Configuration ---
@@ -167,7 +171,7 @@ Function .onInit
 
   ; Check for existing system-wide installation
   StrCpy $SystemInstallExists "0"
-  ${If} ${FileExists} "$PROGRAMFILES64\${PRODUCT_COMPANY_PATH}\${PRODUCT_NAME}\Application\chrome.exe"
+  ${If} ${FileExists} "$PROGRAMFILES64\${PRODUCT_COMPANY_PATH}\${PRODUCT_INSTALL_DIR}\Application\chrome.exe"
     StrCpy $SystemInstallExists "1"
     StrCpy $InstallType "system"
   ${EndIf}
@@ -327,8 +331,8 @@ SectionEnd
 
 Function LaunchHelium
   ${If} $InstallType == "system"
-    Exec '"$PROGRAMFILES64\${PRODUCT_COMPANY_PATH}\${PRODUCT_NAME}\Application\chrome.exe"'
+    Exec '"$PROGRAMFILES64\${PRODUCT_COMPANY_PATH}\${PRODUCT_INSTALL_DIR}\Application\chrome.exe"'
   ${Else}
-    Exec '"$LOCALAPPDATA\${PRODUCT_COMPANY_PATH}\${PRODUCT_NAME}\Application\chrome.exe"'
+    Exec '"$LOCALAPPDATA\${PRODUCT_COMPANY_PATH}\${PRODUCT_INSTALL_DIR}\Application\chrome.exe"'
   ${EndIf}
 FunctionEnd
