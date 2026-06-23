@@ -1,4 +1,4 @@
-# helium-windows
+# helium-reimplemented-windows
 
 Windows packaging for [Helium Reimplemented](https://github.com/keetsta/helium-reimplemented),
 a personal fork of [Helium](https://github.com/imputnet/helium).
@@ -58,8 +58,8 @@ methods for older Windows versions.
 Run in `Developer Command Prompt for VS` (as administrator):
 
 ```cmd
-git clone --recurse-submodules https://github.com/keetsta/helium-windows.git
-cd helium-windows
+git clone --recurse-submodules https://github.com/keetsta/helium-reimplemented-windows.git
+cd helium-reimplemented-windows
 # Replace TAG_OR_BRANCH_HERE with a tag or branch name
 git checkout --recurse-submodules TAG_OR_BRANCH_HERE
 python3 build.py
@@ -128,9 +128,9 @@ ln -s /usr/bin/vim /usr/bin/vi
 
 1. Start `Developer Command Prompt for VS` and `MSYS2 MSYS` shell and navigate to source folder
 	1. `Developer Command Prompt for VS`
-		* `cd c:\path\to\repo\helium-windows`
+		* `cd c:\path\to\repo\helium-reimplemented-windows`
 	1. `MSYS2 MSYS`
-		* `cd /path/to/repo/helium-windows`
+		* `cd /path/to/repo/helium-reimplemented-windows`
 		* You can use Git Bash to determine the path to this repo
 		* Or, you can find it yourself via `/<drive letter>/<path with forward slashes>`
 1. Clone sources
