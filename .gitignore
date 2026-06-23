@@ -2,3 +2,5 @@
 /.gcs_entries
 __pycache__
 /resources/generated
+/tmp
+/_bad_scm

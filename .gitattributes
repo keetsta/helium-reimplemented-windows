@@ -1,1 +1,2 @@
 *.patch linguist-language=C++
+*.sh text eol=lf
