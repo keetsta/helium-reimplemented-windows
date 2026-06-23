@@ -96,17 +96,17 @@ installed to a non-standard drive).
   Dot-sourced by the two build scripts; not run directly.
 - **`fork-build.ps1 [-Dev]`** — full build via `build.py`. Default RELEASE
   (`out\Default`); `-Dev` does a component build in `out\Dev`. On success it
-  writes `build/.fork-sync-marker` (the baseline `fork-sync.sh` syncs from).
+  writes `build/.fork-sync-marker` (the baseline `fork-sync.ps1` syncs from).
 - **`fork-rebuild.ps1 [-Dev]`** — incremental rebuild straight through `ninja`
   (no re-patching), only the changed files + link. `-Dev` → `out\Dev`.
-- **`fork-sync.sh [--rebuild|-r] [--dev] [--dry-run|-n] [--no-pull]`** — run from
-  git-bash. Pulls new core/platform commits and applies *only* the patch delta to
-  the already-unpacked `build/src`, so a quick `fork-rebuild.ps1` picks them up
-  without a full re-download+re-patch. It is conservative: it backs up every file
-  a changed patch touches and, if anything fails to apply cleanly, restores the
-  tree and tells you to run a full `fork-build.ps1`. `--rebuild` then runs
-  `fork-rebuild.ps1`; `--dry-run` fetches and previews the delta without touching
-  the tree.
+- **`fork-sync.ps1 [-Rebuild] [-Dev] [-DryRun] [-NoPull]`** — pulls new
+  core/platform commits and applies *only* the patch delta to the already-unpacked
+  `build/src`, so a quick `fork-rebuild.ps1` picks them up without a full
+  re-download+re-patch. Patch apply/reverse uses `patch.exe` from Git for Windows.
+  It is conservative: it backs up every file a changed patch touches and, if
+  anything fails to apply cleanly, restores the tree and tells you to run a full
+  `fork-build.ps1`. `-Rebuild` then runs `fork-rebuild.ps1`; `-DryRun` fetches and
+  previews the delta without touching the tree.
 - **`fork-wipe-profile.bat`** — deletes only the fork's user-data dir
   (`%LOCALAPPDATA%\imput\Helium Reimplemented`) for a clean onboarding test; never
   touches a stock Helium profile.

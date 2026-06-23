@@ -12,5 +12,5 @@ $log = Join-Path $ForkTmp "helium-build.log"
 
 # Инкрементальная компиляция: ninja сам пересоберёт только изменённые файлы + линковка.
 Set-Location (Join-Path $ForkRoot "build\src")
-Write-Host "=== ninja старт ($outDir : chrome chromedriver setup mini_installer) ===" -ForegroundColor Cyan
+Write-Host "=== ninja start ($outDir : chrome chromedriver setup mini_installer) ===" -ForegroundColor Cyan
 third_party\ninja\ninja.exe -C $outDir chrome chromedriver setup mini_installer 2>&1 | Tee-Object -FilePath $log

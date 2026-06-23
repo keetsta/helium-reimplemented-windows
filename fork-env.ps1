@@ -35,7 +35,7 @@ if ((-not $vsPath) -and (Test-Path $vswhere)) {
     }
 }
 if (-not $vsPath -or -not (Test-Path $vsPath)) {
-    Write-Host "ОШИБКА: Visual Studio не найдена. Задай FORK_VS_PATH (путь установки VS)." -ForegroundColor Red
+    Write-Host "ERROR: Visual Studio not found. Set FORK_VS_PATH to your VS install path." -ForegroundColor Red
     exit 1
 }
 
@@ -49,4 +49,4 @@ Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments 
 
 Write-Host "=== where cl ===" -ForegroundColor Cyan
 where.exe cl
-if ($LASTEXITCODE -ne 0) { Write-Host "ОШИБКА: cl.exe не найден — окружение VS не поднялось" -ForegroundColor Red; exit 1 }
+if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: cl.exe not found - VS environment did not initialize" -ForegroundColor Red; exit 1 }
